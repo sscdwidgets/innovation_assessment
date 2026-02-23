@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Innovation & AI Readiness Assessment</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:‘DM Sans’,system-ui,sans-serif;background:#f4f5f9;color:#0a0f1e;line-height:1.6;-webkit-font-smoothing:antialiased;}
+
+.page{max-width:780px;margin:0 auto;padding:28px 24px 60px;}
+
+.sub-header{background:#fff;border:1px solid #e2e5ed;border-radius:14px;padding:22px 26px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;}
+.sub-header-kicker{font-size:10px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:#FFBF3F;margin-bottom:5px;}
+.sub-header h1{font-size:20px;font-weight:800;color:#0a0f1e;letter-spacing:-0.3px;line-height:1.2;margin-bottom:4px;}
+.sub-header p{font-size:12px;color:#7c8399;max-width:420px;line-height:1.55;}
+.sub-chips{display:flex;gap:7px;flex-wrap:wrap;flex-shrink:0;}
+.s-chip{padding:5px 13px;border-radius:20px;background:#f4f5f9;border:1px solid #e2e5ed;font-size:11px;font-weight:700;color:#7c8399;}
+.s-chip strong{color:#002D72;}
+
+.prog-strip{margin-bottom:20px;}
+.prog-track{height:4px;background:#e2e5ed;border-radius:2px;overflow:hidden;}
+.prog-fill{height:100%;background:linear-gradient(90deg,#002D72,#1a6bb5);border-radius:2px;width:0%;transition:width 0.4s ease;}
+.prog-meta{display:flex;justify-content:space-between;margin-top:6px;}
+.prog-step{font-size:11px;font-weight:700;color:#b5b9c8;}
+.prog-count{font-family:‘JetBrains Mono’,monospace;font-size:11px;color:#b5b9c8;}
+
+.tab-nav{display:flex;gap:2px;background:#eaecf2;padding:4px;border-radius:12px;margin-bottom:20px;overflow-x:auto;}
+.tab-nav::-webkit-scrollbar{display:none;}
+.tab-btn{flex:1;min-width:0;padding:8px 6px;border-radius:9px;font-family:inherit;font-size:11px;font-weight:700;cursor:pointer;border:none;background:transparent;color:#9099aa;transition:all 0.15s;white-space:nowrap;text-align:center;display:flex;flex-direction:column;align-items:center;gap:2px;}
+.tab-btn .tab-icon{font-size:14px;line-height:1;}
+.tab-btn .tab-label{font-size:10px;letter-spacing:0.3px;}
+.tab-btn.active{background:#fff;color:#0a0f1e;box-shadow:0 1px 4px rgba(0,0,0,0.08);}
+.tab-btn.done{color:#002D72;}
+.tab-btn.done .tab-icon::after{content:‘✓’;font-size:9px;vertical-align:super;margin-left:1px;color:#002D72;}
+.tab-btn:disabled{opacity:0.4;cursor:not-allowed;}
+
+.panel{display:none;}
+.panel.active{display:block;}
+
+.pillar-intro{background:#fff;border:1px solid #e2e5ed;border-radius:12px;padding:18px 22px;margin-bottom:16px;display:flex;align-items:center;gap:14px;}
+.pillar-intro-icon{width:40px;height:40px;border-radius:10px;background:transparent;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+.pillar-intro-name{font-size:14px;font-weight:800;color:#0a0f1e;letter-spacing:-0.2px;}
+.pillar-intro-desc{font-size:12px;color:#7c8399;margin-top:2px;line-height:1.5;}
+
+.agentic-intro-card{background:linear-gradient(135deg,#001a4d,#002D72);border-radius:12px;padding:18px 22px;margin-bottom:16px;}
+.agentic-intro-kicker{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#FFBF3F;margin-bottom:6px;}
+.agentic-intro-card h3{font-size:14px;font-weight:800;color:#fff;margin-bottom:6px;}
+.agentic-intro-card p{font-size:12px;color:rgba(255,255,255,0.6);line-height:1.65;}
+
+.q-card{background:#fff;border:1px solid #e2e5ed;border-radius:11px;padding:18px 20px;margin-bottom:8px;transition:border-color 0.15s;}
+.q-card:hover{border-color:#c5cadb;}
+.q-card.answered{border-left:3px solid #002D72;}
+.agentic-q.answered{border-left-color:#1a6bb5;}
+.q-meta{display:flex;align-items:center;gap:7px;margin-bottom:8px;}
+.q-num{font-family:‘JetBrains Mono’,monospace;font-size:10px;font-weight:600;color:#b5b9c8;}
+.q-check{width:15px;height:15px;border-radius:50%;background:#f0f1f5;display:flex;align-items:center;justify-content:center;font-size:8px;color:transparent;flex-shrink:0;transition:all 0.2s;}
+.q-card.answered .q-check{background:#002D72;color:#fff;}
+.q-text{font-size:14px;font-weight:700;color:#0a0f1e;margin-bottom:4px;line-height:1.35;}
+.q-hint{font-size:11.5px;color:#9099aa;margin-bottom:14px;line-height:1.5;font-style:italic;}
+
+.q-options{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;}
+.opt{display:block;padding:10px 8px;border:1.5px solid #e2e5ed;border-radius:9px;text-align:center;font-family:‘DM Sans’,system-ui,sans-serif;font-size:11px;font-weight:600;color:#7c8399;background:#fafbfc;line-height:1.3;cursor:pointer;transition:all 0.12s;user-select:none;}
+.opt:hover{border-color:#002D72;color:#002D72;background:#eef3fb;}
+.opt.selected{background:#002D72;border-color:#002D72;color:#fff;}
+.agentic-q .opt.selected{background:linear-gradient(135deg,#002D72,#1a6bb5);border-color:#001a4d;}
+
+.continue-bar{display:flex;align-items:center;justify-content:space-between;margin-top:20px;padding-top:16px;border-top:1px solid #e2e5ed;}
+.continue-answered{font-size:12px;color:#b5b9c8;}
+.continue-answered strong{color:#0a0f1e;}
+.btn-continue{padding:11px 28px;background:#002D72;color:#fff;border:none;border-radius:10px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.15s;display:flex;align-items:center;gap:8px;}
+.btn-continue:hover{background:#001f52;transform:translateY(-1px);box-shadow:0 4px 14px rgba(0,45,114,0.22);}
+.btn-continue:disabled{background:#dcdfe8;color:#b5b9c8;cursor:not-allowed;transform:none;box-shadow:none;}
+.btn-continue svg{width:14px;height:14px;flex-shrink:0;}
+
+.score-hero{border-radius:14px;padding:26px 28px;margin-bottom:18px;border:2px solid;}
+.score-hero-top{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:16px;margin-bottom:20px;}
+.score-big{font-family:‘JetBrains Mono’,monospace;font-size:60px;font-weight:700;line-height:1;letter-spacing:-2px;}
+.score-denom{font-family:‘JetBrains Mono’,monospace;font-size:24px;font-weight:400;opacity:0.3;margin-left:2px;}
+.score-tier{font-size:22px;font-weight:800;letter-spacing:-0.3px;}
+.score-desc{font-size:12px;color:#7c8399;max-width:280px;margin-top:4px;line-height:1.5;}
+.score-bar-bg{height:7px;border-radius:4px;background:rgba(0,0,0,0.07);}
+.score-bar-fill{height:100%;border-radius:4px;transition:width 0.7s ease;}
+.score-bar-labels{display:flex;justify-content:space-between;margin-top:6px;font-size:10px;color:#b5b9c8;font-weight:600;}
+
+.stat-row{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:18px;}
+.stat-card{padding:16px 18px;background:#fff;border:1px solid #e2e5ed;border-radius:12px;}
+.stat-card.t-gold{border-top:3px solid #FFBF3F;}
+.stat-card.t-red{border-top:3px solid #b91c3a;}
+.stat-lbl{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#b5b9c8;margin-bottom:5px;}
+.stat-val{font-family:‘JetBrains Mono’,monospace;font-size:20px;font-weight:700;color:#0a0f1e;line-height:1.1;}
+.stat-val.sm{font-size:15px;padding-top:2px;}
+.stat-detail{font-size:11px;color:#7c8399;margin-top:3px;}
+
+.pillar-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px;}
+.p-tile{padding:15px 12px;background:#fff;border:1px solid #e2e5ed;border-radius:12px;}
+.p-tile-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:5px;}
+.p-tile-icon{font-size:14px;line-height:1;}
+.p-tile-pct{font-family:‘JetBrains Mono’,monospace;font-size:19px;font-weight:700;color:#0a0f1e;line-height:1;}
+.p-tile-pct sup{font-size:10px;color:#b5b9c8;font-weight:400;}
+.p-tile-name{font-size:9px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;color:#b5b9c8;margin-bottom:7px;line-height:1.3;}
+.p-bar-bg{height:4px;background:#f0f1f5;border-radius:2px;overflow:hidden;margin-bottom:4px;}
+.p-bar-fill{height:100%;border-radius:2px;}
+.p-status{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;}
+
+.agentic-result{background:linear-gradient(135deg,#001a4d,#002D72);border-radius:14px;padding:22px 24px;margin-bottom:18px;}
+.agentic-result-kicker{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#FFBF3F;margin-bottom:5px;}
+.agentic-result h3{font-size:16px;font-weight:800;color:#fff;margin-bottom:5px;}
+.agentic-result p{font-size:12px;color:rgba(255,255,255,0.6);line-height:1.7;max-width:500px;}
+.ag-score-row{display:flex;align-items:center;gap:16px;margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.1);}
+.ag-score-num{font-family:‘JetBrains Mono’,monospace;font-size:38px;font-weight:700;color:#fff;line-height:1;flex-shrink:0;}
+.ag-score-sub{font-size:9px;color:rgba(255,255,255,0.4);margin-top:2px;}
+.ag-bar-wrap{flex:1;}
+.ag-bar-bg{height:5px;background:rgba(255,255,255,0.1);border-radius:3px;overflow:hidden;margin-bottom:7px;}
+.ag-bar-fill{height:100%;background:linear-gradient(90deg,#FFBF3F,#ffd166);border-radius:3px;}
+.ag-tier{font-size:12px;font-weight:700;}
+
+.recs-title{font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#b5b9c8;margin-bottom:10px;}
+.rec-card{display:flex;gap:11px;align-items:flex-start;background:#fff;border:1px solid #e2e5ed;border-radius:11px;padding:14px 16px;margin-bottom:7px;}
+.rec-tag{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:3px 9px;border-radius:6px;white-space:nowrap;flex-shrink:0;margin-top:2px;}
+.tag-priority{background:#e8eefb;color:#002D72;}
+.tag-opportunity{background:#fff3cd;color:#8a5a00;}
+.tag-strength{background:#d1f0e0;color:#0d6938;}
+.rec-body{font-size:12.5px;line-height:1.65;color:#4a5269;}
+.rec-body strong{color:#0a0f1e;font-weight:700;}
+
+.reg-note{padding:14px 18px;border-radius:11px;background:#fefaed;border:1px solid #f0e3a0;border-left:4px solid #FFBF3F;font-size:12px;color:#4a3c00;line-height:1.75;margin-bottom:18px;margin-top:18px;}
+.reg-note strong{color:#002D72;}
+
+.download-bar{display:flex;justify-content:flex-end;margin-top:20px;}
+.btn-download{padding:11px 28px;background:#fff;color:#002D72;border:2px solid #002D72;border-radius:10px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.15s;display:flex;align-items:center;gap:8px;}
+.btn-download:hover{background:#002D72;color:#fff;transform:translateY(-1px);box-shadow:0 4px 14px rgba(0,45,114,0.22);}
+.btn-download svg{width:15px;height:15px;flex-shrink:0;}
+
+@media print{
+body{background:#fff;}
+.sub-header,.prog-strip,.tab-nav,.continue-bar,.download-bar{display:none!important;}
+.panel{display:block!important;}
+.q-card,.q-options,.pillar-intro,.agentic-intro-card{display:none!important;}
+.page{max-width:100%;padding:20px;}
+.score-hero{break-inside:avoid;}
+.stat-row{break-inside:avoid;}
+.pillar-grid{break-inside:avoid;}
+.agentic-result{break-inside:avoid;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+.rec-card{break-inside:avoid;}
+.score-hero{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+.tag-priority,.tag-opportunity,.tag-strength{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+}
+
+@media(max-width:600px){
+.page{padding:16px 14px 40px;}
+.sub-header{flex-direction:column;}
+.q-options{grid-template-columns:1fr 1fr;}
+.pillar-grid{grid-template-columns:1fr 1fr;}
+.stat-row{grid-template-columns:1fr 1fr;}
+.score-big{font-size:44px;}
+.score-hero-top{flex-direction:column;align-items:flex-start;}
+.tab-btn .tab-label{display:none;}
+}
+</style>
+
+</head>
+<body>
+<div class="page">
+
+  <div class="sub-header">
+    <div>
+      <div class="sub-header-kicker">Banker to Banker · Self-Assessment</div>
+      <h1>Innovation &amp; Agentic AI Readiness</h1>
+      <p>25 questions across 4 core pillars plus an Agentic AI spotlight. Receive a personalized readiness score and prioritized action plan.</p>
+    </div>
+    <div class="sub-chips">
+      <div class="s-chip"><strong>25</strong> Questions</div>
+      <div class="s-chip"><strong>4</strong> Pillars</div>
+      <div class="s-chip">~8 min</div>
+    </div>
+  </div>
+
+  <div class="prog-strip">
+    <div class="prog-track"><div class="prog-fill" id="progFill"></div></div>
+    <div class="prog-meta">
+      <span class="prog-step" id="progStep">Step 1 of 6</span>
+      <span class="prog-count" id="progCount">0 / 25 answered</span>
+    </div>
+  </div>
+
+  <div class="tab-nav" id="tabNav">
+    <button class="tab-btn active" id="tnav-0" onclick="goTab(0)"><span class="tab-icon">👥</span><span class="tab-label">People</span></button>
+    <button class="tab-btn" id="tnav-1" onclick="goTab(1)" disabled><span class="tab-icon">🧭</span><span class="tab-label">Philosophy</span></button>
+    <button class="tab-btn" id="tnav-2" onclick="goTab(2)" disabled><span class="tab-icon">⚙️</span><span class="tab-label">Process</span></button>
+    <button class="tab-btn" id="tnav-3" onclick="goTab(3)" disabled><span class="tab-icon">🏃</span><span class="tab-label">Pace</span></button>
+    <button class="tab-btn" id="tnav-4" onclick="goTab(4)" disabled><span class="tab-icon">🤖</span><span class="tab-label">Agentic AI</span></button>
+    <button class="tab-btn" id="tnav-5" onclick="goTab(5)" disabled><span class="tab-icon">📊</span><span class="tab-label">Results</span></button>
+  </div>
+
+  <!-- PANEL 0: PEOPLE -->
+
+  <div class="panel active" id="panel-0">
+    <div class="pillar-intro">
+      <div class="pillar-intro-icon">👥</div>
+      <div>
+        <div class="pillar-intro-name">People &amp; Leadership</div>
+        <div class="pillar-intro-desc">Innovation fails or succeeds based on who owns it, how change-makers are treated, and whether leadership is genuinely invested.</div>
+      </div>
+    </div>
+    <div class="q-card" id="qc1"><div class="q-meta"><span class="q-num">Q01</span><div class="q-check" id="chk1">✓</div></div>
+      <div class="q-text">Who primarily drives innovation and technology decisions at your bank?</div>
+      <div class="q-hint">Consider whether decisions flow from leadership, staff, or are vendor-driven.</div>
+      <div class="q-options">
+        <div class="opt" onclick="pick('q1',1,0,this)">IT department or a single vendor relationship</div>
+        <div class="opt" onclick="pick('q1',2,0,this)">Small internal group, limited cross-functional input</div>
+        <div class="opt" onclick="pick('q1',3,0,this)">Dedicated team with C-suite sponsorship</div>
+        <div class="opt" onclick="pick('q1',4,0,this)">Cross-functional leaders with clear ownership and authority</div>
+      </div>
+    </div>
+    <div class="q-card" id="qc2"><div class="q-meta"><span class="q-num">Q02</span><div class="q-check" id="chk2">✓</div></div>
+      <div class="q-text">How does your institution treat creative, change-oriented employees?</div>
+      <div class="q-hint">The people most likely to drive real innovation often challenge existing assumptions.</div>
+      <div class="q-options">
+        <div class="opt" onclick="pick('q2',1,0,this)">They're often sidelined or they leave</div>
+        <div class="opt" onclick="pick('q2',2,0,this)">Acknowledged but rarely given real authority</div>
+        <div class="opt" onclick="pick('q2',3,0,this)">Supported within defined boundaries</div>
+        <div class="opt" onclick="pick('q2',4,0,this)">Actively elevated with resources to lead change</div>
+      </div>
+    </div>
+    <div class="q-card" id="qc3"><div class="q-meta"><span class="q-num">Q03</span><div class="q-check" id="chk3">✓</div></div>
+      <div class="q-text">How current is your team's practical knowledge of AI and automation tools?</div>
+      <div class="q-hint">Practical awareness of what AI can do and how peer banks deploy it, not deep technical expertise.</div>
+      <div class="q-options">
+        <div class="opt" onclick="pick('q3',1,0,this)">Minimal, mostly passive vendor-led awareness</div>
+        <div class="opt" onclick="pick('q3',2,0,this)">Growing, some staff exploring independently</div>
+        <div class="opt" onclick="pick('q3',3,0,this)">Structured, regular training and industry engagement</div>
+        <div class="opt" onclick="pick('q3',4,0,this)">Deep, internal champions and active external partnerships</div>
+      </div>
+    </div>
+    <div class="q-card" id="qc4"><div class="q-meta"><span class="q-num">Q04</span><div class="q-check" id="chk4">✓</div></div>
+      <div class="q-text">How well does your bank attract and retain technology-forward talent?</div>
+      <div class="q-hint">Community banks often compete against fintechs and larger institutions for tech-literate hires.</div>
+      <div class="q-options">
+        <div class="opt" onclick="pick('q4',1,0,this)">We struggle, compensation and culture are misaligned</div>
+        <div class="opt" onclick="pick('q4',2,0,this)">Neutral, no defined strategy for this segment</div>
+        <div class="opt" onclick="pick('q4',3,0,this)">Improving, investing in retention and culture</div>
+        <div class="opt" onclick="pick('q4',4,0,this)">Strong, we're a destination for this kind of talent</div>
+      </div>
+    </div>
+    <div class="q-card" id="qc5"><div class="q-meta"><span class="q-num">Q05</span><div class="q-check" id="chk5">✓</div></div>
+      <div class="q-text">How engaged is your board in the bank's technology and innovation agenda?</div>
+      <div class="q-hint">Board-level fluency in technology is increasingly a differentiator in decision-making speed.</div>
+      <div class="q-options">
+        <div class="opt" onclick="pick('q5',1,0,this)">Disengaged, technology is seen as an IT matter</div>
+        <div class="opt" onclick="pick('q5',2,0,this)">Aware but not actively engaged in strategy</div>
+        <div class="opt" onclick="pick('q5',3,0,this)">One or two board members champion the topic</div>
+        <div class="opt" onclick="pick('q5',4,0,this)">Board actively engaged, tech is a standing agenda item</div>
+      </div>
+    </div>
+    <div class="continue-bar">
+      <span class="continue-answered" id="ca-0">Answer all 5 questions to continue</span>
+      <button class="btn-continue" id="cb-0" onclick="advance(0)" disabled>Continue <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 7h10M8 3l4 4-4 4"/></svg></button>
+    </div>
+  </div>
+
+  <!-- PANEL 1: PHILOSOPHY -->
+
+  <div class="panel" id="panel-1">
+    <div class="pillar-intro">
+      <div class="pillar-intro-icon">🧭</div>
+      <div>
+        <div class="pillar-intro-name">Philosophy &amp; Vision</div>
+        <div class="pillar-intro-desc">A roadmap tells you what tools to buy. A philosophy tells you why and what transformation you're actually building toward.</div>
+      </div>
+    </div>
+    <div class="q-card" id="qc6"><div class="q-meta"><span class="q-num">Q06</span><div class="q-check" id="chk6">✓</div></div>
+      <div class="q-text">Does your bank have a defined innovation philosophy, not just a technology roadmap?</div>
+      <div class="q-hint">A roadmap tells you what tools to buy. A philosophy tells you why and what transformation you're building toward.</div>
+      <div class="q-options">
+        <div class="opt" onclick="pick('q6',1,1,this)">No, we invest reactively as needs arise</div>
+        <div class="opt" onclick="pick('q6',2,1,this)">Partly, roadmap exists but no guiding vision</div>
+        <div class="opt" onclick="pick('q6',3,1,this)">Yes, tied to planning but not yet fully embedded</div>
+        <div class="opt" onclick="pick('q6',4,1,this)">Yes, a clear philosophy drives every technology decision</div>
+      </div>
+    </div>
+    <div class="q-card" id="qc7"><div class="q-meta"><span class="q-num">Q07</span><div class="q-check" id="chk7">✓</div></div>
+      <div class="q-text">How well does your innovation strategy align with a realistic time horizon?</div>
+      <div class="q-hint">Transformational change typically requires 3 to 5 years. Mismatched timelines create abandoned projects and technical debt.</div>
+      <div class="q-options">
+        <div class="opt" onclick="pick('q7',1,1,this)">We expect results in 12 months or move on</div>
+        <div class="opt" onclick="pick('q7',2,1,this)">2-year budget cycles, often too short</div>
+        <div class="opt" onclick="pick('q7',3,1,this)">3-year plans with milestone reviews</div>
+        <div class="opt" onclick="pick('q7',4,1,this)">Multi-year roadmaps with phased milestones and board buy-in</div>
+      </div>
+    </div>
+    <div class="q-card" id="qc8"><div class="q-meta"><span class="q-num">Q08</span><div class="q-check" id="chk8">✓</div></div>
+      <div class="q-text">How focused is your technology investment on customer outcomes vs. internal efficiency?</div>
+      <div class="q-hint">Both matter, but customer-facing impact should anchor investment decisions, not trail them.</div>
+      <div class="q-options">
+        <div class="opt" onclick="pick('q8',1,1,this)">Mostly internal, solving operational pain points</div>
+        <div class="opt" onclick="pick('q8',2,1,this)">Mixed, no deliberate priority</div>
+        <div class="opt" onclick="pick('q8',3,1,this)">Leaning customer-first with operational support</div>
+        <div class="opt" onclick="pick('q8',4,1,this)">Explicitly customer-outcome driven across the portfolio</div>
+      </div>
+    </div>
+    <div class="q-card" id="qc9"><div class="q-meta"><span class="q-num">Q09</span><div class="q-check" id="chk9">✓</div></div>
+      <div class="q-text">How clearly does your bank define success before launching a new technology initiative?</div>
+      <div class="q-hint">Vague success criteria are the most common reason technology projects stall or lose support.</div>
+      <div class="q-options">
+        <div class="opt" onclick="pick('q9',1,1,this)">Success is rarely defined before launch</div>
+        <div class="opt" onclick="pick('q9',2,1,this)">General goals exist but no measurable benchmarks</div>
+        <div class="opt" onclick="pick('q9',3,1,this)">KPIs defined at launch, reviewed periodically</div>
+        <div class="opt" onclick="pick('q9',4,1,this)">Measurable outcomes defined before any project begins</div>
+      </div>
+    </div>
+    <div class="q-card" id="qc10"><div class="q-meta"><span class="q-num">Q10</span><div class="q-check" id="chk10">✓</div></div>
+      <div class="q-text">How well does your bank learn from failed or stalled technology initiatives?</div>
+      <div class="q-hint">Institutions that debrief failures systematically accelerate their next cycle.</div>
+      <div class="q-options">
+        <div class="opt" onclick="pick('q10',1,1,this)">Failures are quietly shelved, no structured debrief</div>
+        <div class="opt" onclick="pick('q10',2,1,this)">Informal conversations happen, rarely documented</div>
+        <div class="opt" onclick="pick('q10',3,1,this)">Post-mortems occur, findings sometimes applied</div>
+        <div class="opt" onclick="pick('q10',4,1,this)">Structured retrospectives with learnings applied to future projects</div>
+      </div>
+    </div>
+    <div class="continue-bar">
+      <span class="continue-answered" id="ca-1">Answer all 5 questions to continue</span>
+      <button class="btn-continue" id="cb-1" onclick="advance(1)" disabled>Continue <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 7h10M8 3l4 4-4 4"/></svg></button>
+    </div>
+  </div>
+
+  <!-- PANEL 2: PROCESS -->
+
+  <div class="panel" id="panel-2">
+    <div class="pillar-intro">
+      <div class="pillar-intro-icon">⚙️</div>
+      <div>
+        <div class="pillar-intro-name">Process &amp; Operations</div>
+        <div class="pillar-intro-desc">Technology layered on broken processes amplifies inefficiency. Data quality and system integration determine what's possible with AI.</div>
+      </div>
+    </div>
+    <div class="q-card" id="qc11"><div class="q-meta"><span class="q-num">Q11</span><div class="q-check" id="chk11">✓</div></div>
+      <div class="q-text">When you introduce new technology, what happens to the underlying workflows?</div>
+      <div class="q-hint">Technology layered on broken processes amplifies inefficiency.</div>
+      <div class="q-options">
+        <div class="opt" onclick="pick('q11',1,2,this)">We digitize existing processes, workflows unchanged</div>
+        <div class="opt" onclick="pick('q11',2,2,this)">Some adjustments made, core process unchanged</div>
+        <div class="opt" onclick="pick('q11',3,2,this)">We redesign workflows as part of each implementation</div>
+        <div class="opt" onclick="pick('q11',4,2,this)">We rethink the process end-to-end before any tech decision</div>
+      </div>
+    </div>
+    <div class="q-card" id="qc12"><div class="q-meta"><span class="q-num">Q12</span><div class="q-check" id="chk12">✓</div></div>
+      <div class="q-text">How integrated are your core banking systems with newer tools and data sources?</div>
+      <div class="q-hint">Siloed systems are the single biggest technical barrier to deploying agentic AI effectively.</div>
+      <div class="q-options">
+        <div class="opt" onclick="pick('q12',1,2,this)">Highly siloed, manual handoffs between most systems</div>
+        <div class="opt" onclick="pick('q12',2,2,this)">Partial, some API connectivity but many gaps remain</div>
+        <div class="opt" onclick="pick('q12',3,2,this)">Reasonably connected, most key systems share data</div>
+        <div class="opt" onclick="pick('q12',4,2,this)">Well-integrated, real-time data flows across the stack</div>
+      </div>
+    </div>
+    <div class="q-card" id="qc13"><div class="q-meta"><span class="q-num">Q13</span><div class="q-check" id="chk13">✓</div></div>
+      <div class="q-text">How would you describe the quality and accessibility of your bank's internal data?</div>
+      <div class="q-hint">AI tools are only as good as the data they operate on. Clean, accessible data is a prerequisite, not a byproduct.</div>
+      <div class="q-options">
+        <div class="opt" onclick="pick('q13',1,2,this)">Fragmented, inconsistent formats and hard to access</div>
+        <div class="opt" onclick="pick('q13',2,2,this)">Centralized in some areas, siloed in others</div>
+        <div class="opt" onclick="pick('q13',3,2,this)">Mostly clean and accessible with known gaps</div>
+        <div class="opt" onclick="pick('q13',4,2,this)">High quality, well-governed, readily queryable</div>
+      </div>
+    </div>
+    <div class="q-card" id="qc14"><div class="q-meta"><span class="q-num">Q14</span><div class="q-check" id="chk14">✓</div></div>
+      <div class="q-text">How does your bank redesign workflows before deploying new technology?</div>
+      <div class="q-hint">Fixing the process first, then applying technology to accelerate it, is the sequence that produces durable results.</div>
+      <div class="q-options">
+        <div class="opt" onclick="pick('q14',1,2,this)">We don't, technology is deployed to existing workflows</div>
+        <div class="opt" onclick="pick('q14',2,2,this)">Minor adjustments made during implementation</div>
+        <div class="opt" onclick="pick('q14',3,2,this)">Workflows reviewed and updated as part of each project</div>
+        <div class="opt" onclick="pick('q14',4,2,this)">End-to-end process redesign precedes every technology decision</div>
+      </div>
+    </div>
+    <div class="q-card" id="qc15"><div class="q-meta"><span class="q-num">Q15</span><div class="q-check" id="chk15">✓</div></div>
+      <div class="q-text">How dependent is your bank on core vendor timelines for innovation?</div>
+      <div class="q-hint">Your core vendor sets a floor, not a ceiling.</div>
+      <div class="q-options">
+        <div class="opt" onclick="pick('q15',1,2,this)">Entirely, we wait for our core to release features</div>
+        <div class="opt" onclick="pick('q15',2,2,this)">Mostly, the core drives our roadmap</div>
+        <div class="opt" onclick="pick('q15',3,2,this)">Balanced, core plus strategic third-party integrations</div>
+        <div class="opt" onclick="pick('q15',4,2,this)">Independent, we complement core with proprietary capabilities</div>
+      </div>
+    </div>
+    <div class="continue-bar">
+      <span class="continue-answered" id="ca-2">Answer all 5 questions to continue</span>
+      <button class="btn-continue" id="cb-2" onclick="advance(2)" disabled>Continue <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 7h10M8 3l4 4-4 4"/></svg></button>
+    </div>
+  </div>
+
+  <!-- PANEL 3: PACE -->
+
+  <div class="panel" id="panel-3">
+    <div class="pillar-intro">
+      <div class="pillar-intro-icon">🏃</div>
+      <div>
+        <div class="pillar-intro-name">Pace &amp; Execution</div>
+        <div class="pillar-intro-desc">Speed without strategy erodes the trust that is community banking's primary competitive asset. The goal is to move smart, not just fast.</div>
+      </div>
+    </div>
+    <div class="q-card" id="qc16"><div class="q-meta"><span class="q-num">Q16</span><div class="q-check" id="chk16">✓</div></div>
+      <div class="q-text">How does your bank approach rolling out new technology to customers?</div>
+      <div class="q-hint">Banks that pilot carefully and scale what works protect customer trust while building internal confidence.</div>
+      <div class="q-options">
+        <div class="opt" onclick="pick('q16',1,3,this)">Broad launch first, adjust based on customer feedback</div>
+        <div class="opt" onclick="pick('q16',2,3,this)">Limited testing, mostly vendor demos and peer references</div>
+        <div class="opt" onclick="pick('q16',3,3,this)">Structured pilots with internal stakeholders first</div>
+        <div class="opt" onclick="pick('q16',4,3,this)">Rigorous pilots with measurable criteria and phased scaling</div>
+      </div>
+    </div>
+    <div class="q-card" id="qc17"><div class="q-meta"><span class="q-num">Q17</span><div class="q-check" id="chk17">✓</div></div>
+      <div class="q-text">How much does your core vendor's roadmap drive your innovation calendar?</div>
+      <div class="q-hint">Your core provider's roadmap should inform your strategy, not replace it.</div>
+      <div class="q-options">
+        <div class="opt" onclick="pick('q17',1,3,this)">Entirely, we move when our core moves</div>
+        <div class="opt" onclick="pick('q17',2,3,this)">Mostly, we supplement occasionally with third parties</div>
+        <div class="opt" onclick="pick('q17',3,3,this)">Balanced, core informs but doesn't dictate our pace</div>
+        <div class="opt" onclick="pick('q17',4,3,this)">Independent, we set our own pace with deliberate vendor inputs</div>
+      </div>
+    </div>
+    <div class="q-card" id="qc18"><div class="q-meta"><span class="q-num">Q18</span><div class="q-check" id="chk18">✓</div></div>
+      <div class="q-text">How does your bank define "fast" when it comes to technology delivery?</div>
+      <div class="q-hint">True speed means minimizing rework, not just hitting launch dates.</div>
+      <div class="q-options">
+        <div class="opt" onclick="pick('q18',1,3,this)">Fast means launching quickly, quality issues addressed after</div>
+        <div class="opt" onclick="pick('q18',2,3,this)">We prioritize deadlines, rework is expected</div>
+        <div class="opt" onclick="pick('q18',3,3,this)">We balance speed and quality with some iteration built in</div>
+        <div class="opt" onclick="pick('q18',4,3,this)">Speed is measured by durability, we minimize rework by design</div>
+      </div>
+    </div>
+    <div class="q-card" id="qc19"><div class="q-meta"><span class="q-num">Q19</span><div class="q-check" id="chk19">✓</div></div>
+      <div class="q-text">How does your bank balance acting on current customer feedback vs. anticipating future needs?</div>
+      <div class="q-hint">Customers often can't tell you what's possible. The best banks listen actively and lead proactively.</div>
+      <div class="q-options">
+        <div class="opt" onclick="pick('q19',1,3,this)">We respond primarily to complaints and stated preferences</div>
+        <div class="opt" onclick="pick('q19',2,3,this)">We use feedback but rarely look ahead of it</div>
+        <div class="opt" onclick="pick('q19',3,3,this)">We track trends and use them to shape our roadmap</div>
+        <div class="opt" onclick="pick('q19',4,3,this)">We actively introduce customers to capabilities they didn't know to ask for</div>
+      </div>
+    </div>
+    <div class="q-card" id="qc20"><div class="q-meta"><span class="q-num">Q20</span><div class="q-check" id="chk20">✓</div></div>
+      <div class="q-text">How does your bank recognize and reinforce successful technology implementations?</div>
+      <div class="q-hint">Celebrating durable wins, not just launches, shapes the kind of innovation culture that compounds over time.</div>
+      <div class="q-options">
+        <div class="opt" onclick="pick('q20',1,3,this)">We celebrate launches but rarely measure long-term outcomes</div>
+        <div class="opt" onclick="pick('q20',2,3,this)">Some follow-up, but no formal recognition for durability</div>
+        <div class="opt" onclick="pick('q20',3,3,this)">We review outcomes and recognize projects that hold up over time</div>
+        <div class="opt" onclick="pick('q20',4,3,this)">Durable results are explicitly rewarded and used to inform future decisions</div>
+      </div>
+    </div>
+    <div class="continue-bar">
+      <span class="continue-answered" id="ca-3">Answer all 5 questions to continue</span>
+      <button class="btn-continue" id="cb-3" onclick="advance(3)" disabled>Continue <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 7h10M8 3l4 4-4 4"/></svg></button>
+    </div>
+  </div>
+
+  <!-- PANEL 4: AGENTIC AI -->
+
+  <div class="panel" id="panel-4">
+    <div class="agentic-intro-card">
+      <div class="agentic-intro-kicker">🤖 Agentic AI Spotlight</div>
+      <h3>The most consequential near-term technology decision in community banking</h3>
+      <p>Unlike a chatbot that answers a single question, agentic AI takes sequences of autonomous actions: pre-screening loan files, routing exceptions, populating compliance checklists, orchestrating departmental handoffs. These five questions assess your bank's readiness to move from curiosity to deployment.</p>
+    </div>
+    <div class="q-card agentic-q" id="qc21"><div class="q-meta"><span class="q-num">Q21</span><div class="q-check" id="chk21">✓</div></div>
+      <div class="q-text">How would you describe your bank's current awareness of agentic AI?</div>
+      <div class="q-hint">Awareness of the term is different from understanding real banking use cases.</div>
+      <div class="q-options">
+        <div class="opt" onclick="pick('q21',1,4,this)">Heard the term but not actively tracking it</div>
+        <div class="opt" onclick="pick('q21',2,4,this)">Aware but haven't mapped it to specific use cases yet</div>
+        <div class="opt" onclick="pick('q21',3,4,this)">Identified 1 to 2 internal use cases to explore</div>
+        <div class="opt" onclick="pick('q21',4,4,this)">Active pilot or formal evaluation underway</div>
+      </div>
+    </div>
+    <div class="q-card agentic-q" id="qc22"><div class="q-meta"><span class="q-num">Q22</span><div class="q-check" id="chk22">✓</div></div>
+      <div class="q-text">How prepared is your governance framework for AI oversight and model risk?</div>
+      <div class="q-hint">The OCC, FDIC, and Federal Reserve are actively developing guidance on model risk, fair lending, and AI explainability.</div>
+      <div class="q-options">
+        <div class="opt" onclick="pick('q22',1,4,this)">No formal AI governance exists</div>
+        <div class="opt" onclick="pick('q22',2,4,this)">Awareness exists but no formal policy yet</div>
+        <div class="opt" onclick="pick('q22',3,4,this)">Policy drafts are underway</div>
+        <div class="opt" onclick="pick('q22',4,4,this)">Established, documented, board-aware, and exam-ready</div>
+      </div>
+    </div>
+    <div class="q-card agentic-q" id="qc23"><div class="q-meta"><span class="q-num">Q23</span><div class="q-check" id="chk23">✓</div></div>
+      <div class="q-text">Where is your bank's highest-priority near-term opportunity for agentic AI?</div>
+      <div class="q-hint">Select the one that best reflects your current strategic focus and operational pain.</div>
+      <div class="q-options">
+        <div class="opt" onclick="pick('q23',2,4,this)">Loan pre-screening and exception flagging</div>
+        <div class="opt" onclick="pick('q23',2,4,this)">Compliance documentation and audit preparation</div>
+        <div class="opt" onclick="pick('q23',2,4,this)">Customer service routing and intelligent FAQs</div>
+        <div class="opt" onclick="pick('q23',2,4,this)">Back-office automation and workflow orchestration</div>
+      </div>
+    </div>
+    <div class="q-card agentic-q" id="qc24"><div class="q-meta"><span class="q-num">Q24</span><div class="q-check" id="chk24">✓</div></div>
+      <div class="q-text">How confident is your leadership in explaining AI-driven decisions to regulators or customers?</div>
+      <div class="q-hint">Explainability is both a regulatory expectation and a community trust-building tool.</div>
+      <div class="q-options">
+        <div class="opt" onclick="pick('q24',1,4,this)">Not confident, AI is a black box internally</div>
+        <div class="opt" onclick="pick('q24',2,4,this)">Somewhat, general awareness but nothing formal</div>
+        <div class="opt" onclick="pick('q24',3,4,this)">Fairly confident, can speak to methodology and oversight</div>
+        <div class="opt" onclick="pick('q24',4,4,this)">Very confident, documented, tested, and audit-ready</div>
+      </div>
+    </div>
+    <div class="q-card agentic-q" id="qc25"><div class="q-meta"><span class="q-num">Q25</span><div class="q-check" id="chk25">✓</div></div>
+      <div class="q-text">How does your bank view the relationship between agentic AI and your existing staff?</div>
+      <div class="q-hint">The banks that win with AI use it to free their best people for higher-value work.</div>
+      <div class="q-options">
+        <div class="opt" onclick="pick('q25',1,4,this)">With concern, staff see AI as a job threat</div>
+        <div class="opt" onclick="pick('q25',2,4,this)">Cautious curiosity, interest but no clear framework</div>
+        <div class="opt" onclick="pick('q25',3,4,this)">Constructive, we've begun mapping AI to human roles</div>
+        <div class="opt" onclick="pick('q25',4,4,this)">Collaborative, staff involved in designing AI workflows</div>
+      </div>
+    </div>
+    <div class="continue-bar">
+      <span class="continue-answered" id="ca-4">Answer all 5 questions to continue</span>
+      <button class="btn-continue" id="cb-4" onclick="advance(4)" disabled>View My Results <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 7h10M8 3l4 4-4 4"/></svg></button>
+    </div>
+  </div>
+
+  <!-- PANEL 5: RESULTS -->
+
+  <div class="panel" id="panel-5">
+    <div class="results-wrap" id="resultsWrap"></div>
+  </div>
+
+</div>
+
+<script>
+// Answer store: qName -> numeric value
+var answers = {};
+
+var PILLARS = [
+  {name:'People',     icon:'👥', qs:['q1','q2','q3','q4','q5'],      max:20},
+  {name:'Philosophy', icon:'🧭', qs:['q6','q7','q8','q9','q10'],     max:20},
+  {name:'Process',    icon:'⚙️', qs:['q11','q12','q13','q14','q15'], max:20},
+  {name:'Pace',       icon:'🏃', qs:['q16','q17','q18','q19','q20'], max:20}
+];
+var AGENTIC = {qs:['q21','q22','q23','q24','q25'], max:18};
+
+var panelQs = [
+  ['q1','q2','q3','q4','q5'],
+  ['q6','q7','q8','q9','q10'],
+  ['q11','q12','q13','q14','q15'],
+  ['q16','q17','q18','q19','q20'],
+  ['q21','q22','q23','q24','q25']
+];
+
+var TOTAL = 25;
+
+function pick(qName, value, panelIdx, el) {
+  // Deselect siblings in same q-options group
+  var opts = el.parentNode.querySelectorAll('.opt');
+  opts.forEach(function(o){ o.classList.remove('selected'); });
+  el.classList.add('selected');
+
+  // Store answer
+  answers[qName] = value;
+
+  // Mark card answered
+  var qNum = parseInt(qName.replace('q',''));
+  var card = document.getElementById('qc'+qNum);
+  var chk  = document.getElementById('chk'+qNum);
+  if(card) card.classList.add('answered');
+  if(chk)  chk.style.background='#002D72'; chk.style.color='#fff';
+
+  // Count panel answers
+  var a = panelQs[panelIdx].filter(function(q){ return answers[q] !== undefined; }).length;
+  var btn = document.getElementById('cb-'+panelIdx);
+  var lbl = document.getElementById('ca-'+panelIdx);
+  var remaining = 5 - a;
+  if(a >= 5){
+    btn.disabled = false;
+    lbl.innerHTML = '<strong>All answered</strong> — click Continue to proceed';
+  } else {
+    btn.disabled = true;
+    lbl.textContent = remaining + ' question' + (remaining===1?'':'s') + ' remaining';
+  }
+
+  // Global progress
+  var total = Object.keys(answers).length;
+  var pct = Math.round(total/TOTAL*100);
+  document.getElementById('progFill').style.width = pct+'%';
+  document.getElementById('progCount').textContent = total+' / '+TOTAL+' answered';
+}
+
+function val(q){ return answers[q] || 0; }
+
+function goTab(idx){
+  var btn = document.getElementById('tnav-'+idx);
+  if(btn && btn.disabled) return;
+  document.querySelectorAll('.panel').forEach(function(p){ p.classList.remove('active'); });
+  document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
+  document.getElementById('panel-'+idx).classList.add('active');
+  document.getElementById('tnav-'+idx).classList.add('active');
+  var labels = ['People &amp; Leadership','Philosophy &amp; Vision','Process &amp; Operations','Pace &amp; Execution','Agentic AI','Results'];
+  document.getElementById('progStep').innerHTML = 'Step '+(idx+1)+' of 6 &mdash; '+labels[idx];
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function advance(fromPanel){
+  var next = fromPanel + 1;
+  document.getElementById('tnav-'+fromPanel).classList.add('done');
+  document.getElementById('tnav-'+next).disabled = false;
+  if(next === 5) renderResults();
+  goTab(next);
+}
+
+function tierInfo(s){
+  if(s>=80) return{tier:'Innovation Leader',desc:'Mature foundation. Focus on scaling agentic deployments and governance.',color:'#0d6938',bg:'linear-gradient(135deg,#edf9f2,#f5fcf8)',border:'#a8dfc0',bar:'#0d6938'};
+  if(s>=60) return{tier:'Active Builder',desc:'Real momentum. Target AI governance and process redesign next.',color:'#002D72',bg:'linear-gradient(135deg,#eaf0fb,#f4f7fd)',border:'#b3c7ec',bar:'#002D72'};
+  if(s>=40) return{tier:'Foundation Stage',desc:'Build deliberately. People and philosophy before tools.',color:'#8a5a00',bg:'linear-gradient(135deg,#fefaed,#fffdf5)',border:'#f0e3a0',bar:'#FFBF3F'};
+  return{tier:'Early Awareness',desc:'Start now. Banks building today will leapfrog those that wait.',color:'#b91c3a',bg:'linear-gradient(135deg,#fdf1f3,#fff8f9)',border:'#f5c6cf',bar:'#b91c3a'};
+}
+function statusInfo(p){
+  if(p>=80) return{label:'Strong',color:'#0d6938',bar:'#0d6938'};
+  if(p>=55) return{label:'Developing',color:'#8a5a00',bar:'#FFBF3F'};
+  return{label:'Needs Focus',color:'#b91c3a',bar:'#b91c3a'};
+}
+function agTierInfo(p){
+  if(p>=80) return{label:'AI-Ready',color:'#5fcea8'};
+  if(p>=55) return{label:'Exploring',color:'#FFBF3F'};
+  if(p>=35) return{label:'Awareness Stage',color:'#f0a040'};
+  return{label:'Not Yet Started',color:'rgba(255,255,255,0.5)'};
+}
+
+function buildRecs(scores, agPct){
+  var p=scores[0].pct, ph=scores[1].pct, pr=scores[2].pct, pa=scores[3].pct;
+  var recs=[
+    {score:p, t:p<55?'priority':'strength', b:p<55
+      ?'<strong>People &amp; Leadership:</strong> Build a cross-functional innovation team with executive sponsorship and frontline voice. Vendor-driven decisions consistently underperform institutions with internal ownership.'
+      :'<strong>People &amp; Leadership:</strong> Strong leadership foundation. Formalize an innovation council with cross-functional authority and a clear mandate to move quickly.'},
+    {score:ph, t:ph<55?'priority':'strength', b:ph<55
+      ?'<strong>Philosophy &amp; Vision:</strong> Define what transformation means for your bank before your next technology investment. Tactical decisions without a guiding philosophy do not compound.'
+      :'<strong>Philosophy &amp; Vision:</strong> Solid strategic clarity. Lock in multi-year funding and confirm your roadmap has genuine board buy-in, not just awareness.'},
+    {score:pr, t:pr<55?'priority':'opportunity', b:pr<55
+      ?'<strong>Process &amp; Operations:</strong> Redesign your most painful customer workflow end-to-end before buying new tools. Technology amplifies broken processes rather than fixing them.'
+      :'<strong>Process &amp; Operations:</strong> Good workflow discipline. Map remaining manual handoffs between systems; these integration gaps are your primary barrier to agentic AI deployment.'},
+    {score:pa, t:pa<55?'priority':'opportunity', b:pa<55
+      ?'<strong>Pace &amp; Execution:</strong> Establish a structured pilot framework before your next rollout. Speed without deliberate testing erodes customer trust, which is your most durable competitive advantage.'
+      :'<strong>Pace &amp; Execution:</strong> Disciplined execution posture. Formalize how you recognize durable wins and use those outcomes to shape future investment decisions.'},
+    {score:agPct, t:agPct<45?'priority':agPct<75?'opportunity':'strength', b:agPct<45
+      ?'<strong>Agentic AI:</strong> Map two high-volume, rule-based workflows such as loan pre-screening or compliance documentation and assess them for agentic AI. Build your governance framework in parallel. Capability and compliance must grow together.'
+      :agPct<75
+      ?'<strong>Agentic AI:</strong> You are positioned to move from awareness to structured pilot. Prioritize explainable, auditable use cases, engage your examiner proactively, and document everything from day one.'
+      :'<strong>Agentic AI:</strong> Ahead of most community institution peers. Scale what is working, document outcomes for board reporting, and begin exploring multi-step agentic workflows that span departments.'}
+  ];
+  recs.sort(function(a,b){
+    var o={priority:0,opportunity:1,strength:2};
+    return o[a.t]-o[b.t] || a.score-b.score;
+  });
+  return recs;
+}
+
+function renderResults(){
+  var scores = PILLARS.map(function(p){
+    var raw = p.qs.reduce(function(s,q){return s+val(q);},0);
+    return{name:p.name,icon:p.icon,pct:Math.round(raw/p.max*100)};
+  });
+  var agRaw = AGENTIC.qs.reduce(function(s,q){return s+val(q);},0);
+  var agPct = Math.round(agRaw/AGENTIC.max*100);
+  var overall = Math.round(scores.reduce(function(s,p){return s+p.pct;},0)/scores.length);
+  var ti = tierInfo(overall);
+  var top = scores.reduce(function(a,b){return a.pct>=b.pct?a:b;});
+  var bot = scores.reduce(function(a,b){return a.pct<=b.pct?a:b;});
+  var at = agTierInfo(agPct);
+  var h = '';
+
+  h+='<div class="score-hero" style="background:'+ti.bg+';border-color:'+ti.border+'">';
+  h+='<div class="score-hero-top">';
+  h+='<div><span class="score-big" style="color:'+ti.color+'">'+overall+'</span><span class="score-denom" style="color:'+ti.color+'">/100</span></div>';
+  h+='<div style="text-align:right"><div class="score-tier" style="color:'+ti.color+'">'+ti.tier+'</div><div class="score-desc">'+ti.desc+'</div></div>';
+  h+='</div>';
+  h+='<div class="score-bar-bg"><div class="score-bar-fill" style="width:'+Math.min(overall,100)+'%;background:'+ti.bar+'"></div></div>';
+  h+='<div class="score-bar-labels"><span>0</span><span>25</span><span>50</span><span>75</span><span>100</span></div>';
+  h+='</div>';
+
+  h+='<div class="stat-row">';
+  h+='<div class="stat-card t-gold"><div class="stat-lbl">Strongest Pillar</div><div class="stat-val sm">'+top.icon+' '+top.name+'</div><div class="stat-detail">'+top.pct+'% &mdash; '+statusInfo(top.pct).label+'</div></div>';
+  h+='<div class="stat-card t-red"><div class="stat-lbl">Top Focus Area</div><div class="stat-val sm">'+bot.icon+' '+bot.name+'</div><div class="stat-detail">'+bot.pct+'% &mdash; highest priority</div></div>';
+  h+='</div>';
+
+  h+='<div class="pillar-grid">';
+  scores.forEach(function(p){
+    var st=statusInfo(p.pct);
+    h+='<div class="p-tile">';
+    h+='<div class="p-tile-top"><span class="p-tile-icon">'+p.icon+'</span><div class="p-tile-pct">'+p.pct+'<sup>%</sup></div></div>';
+    h+='<div class="p-tile-name">'+p.name+'</div>';
+    h+='<div class="p-bar-bg"><div class="p-bar-fill" style="width:'+p.pct+'%;background:'+st.bar+'"></div></div>';
+    h+='<div class="p-status" style="color:'+st.color+'">'+st.label+'</div>';
+    h+='</div>';
+  });
+  h+='</div>';
+
+  h+='<div class="agentic-result">';
+  h+='<div class="agentic-result-kicker">🤖 Agentic AI Spotlight</div>';
+  h+='<h3>Your Agentic AI Readiness</h3>';
+  h+='<p>Your score reflects current awareness, governance posture, and organizational readiness to move from curiosity to deployment, the most consequential near-term technology decision community banks will face.</p>';
+  h+='<div class="ag-score-row">';
+  h+='<div><div class="ag-score-num">'+agPct+'</div><div class="ag-score-sub">out of 100</div></div>';
+  h+='<div class="ag-bar-wrap"><div class="ag-bar-bg"><div class="ag-bar-fill" style="width:'+agPct+'%"></div></div>';
+  h+='<div style="display:flex;justify-content:space-between;margin-top:5px"><span style="font-size:9px;color:rgba(255,255,255,0.3)">Not Started</span><span style="font-size:9px;color:rgba(255,255,255,0.3)">AI-Ready</span></div></div>';
+  h+='<div><div class="ag-tier" style="color:'+at.color+'">'+at.label+'</div><div style="font-size:10px;color:rgba(255,255,255,0.35);margin-top:2px">Agentic AI tier</div></div>';
+  h+='</div></div>';
+
+  h+='<div class="recs-title" style="margin-top:20px">Prioritized Recommendations</div>';
+  var lmap={priority:'Priority',opportunity:'Opportunity',strength:'Strength'};
+  buildRecs(scores,agPct).forEach(function(r){
+    h+='<div class="rec-card"><span class="rec-tag tag-'+r.t+'">'+lmap[r.t]+'</span><div class="rec-body">'+r.b+'</div></div>';
+  });
+
+  h+='<div class="reg-note"><strong>On Regulatory Navigation:</strong> Agentic progress and regulatory compliance are not opposites; they are parallel disciplines. The OCC, FDIC, and Federal Reserve are actively developing guidance on model risk management, fair lending in automated decisions, and AI governance. Community banks that begin building internal documentation, policy frameworks, and board awareness now will be positioned to move quickly and credibly when that guidance firms up.</div>';
+
+  h+='<div class="download-bar"><button class="btn-download" onclick="downloadResults()"><svg viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 2v8M4 7l3.5 3.5L11 7M2 12h11"/></svg>Download Results</button></div>';
+
+  document.getElementById('resultsWrap').innerHTML = h;
+}
+
+function downloadResults(){
+  window.print();
+}
+
+document.getElementById('progStep').innerHTML = 'Step 1 of 6 &mdash; People &amp; Leadership';
+</script>
+
+</body>
+</html>
