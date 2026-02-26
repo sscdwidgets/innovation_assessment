@@ -796,14 +796,14 @@ function downloadResults(){ window.print(); }
 
 document.getElementById('progStep').innerHTML = 'Step 1 of 6 &mdash; People &amp; Leadership';
 
-// Restore answers after Formstack redirect — check localStorage on every load
+// Restore answers when Formstack redirects back to this page with ?submitted=1
 (function(){
-  var saved = localStorage.getItem('innovationAnswers');
-  if(saved){
-    try {
-      var restored = JSON.parse(saved);
-      if(Object.keys(restored).length >= 25){
-        answers = restored;
+  var params = new URLSearchParams(window.location.search);
+  if(params.get('submitted') === '1'){
+    var saved = localStorage.getItem('innovationAnswers');
+    if(saved){
+      try {
+        answers = JSON.parse(saved);
         localStorage.removeItem('innovationAnswers');
         for(var i=0;i<=5;i++){
           var t=document.getElementById('tnav-'+i);
@@ -817,8 +817,10 @@ document.getElementById('progStep').innerHTML = 'Step 1 of 6 &mdash; People &amp
         document.getElementById('progCount').textContent='25 / 25 answered';
         renderResults();
         goTab(5);
-      }
-    } catch(e){ console.warn('Could not restore answers', e); }
+      } catch(e){ console.warn('Could not restore answers', e); }
+    }
+    // Clean the URL so refreshing doesn't re-trigger
+    history.replaceState(null,'',window.location.pathname);
   }
 })();
 </script>
