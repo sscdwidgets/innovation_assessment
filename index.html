@@ -644,8 +644,8 @@ function advance(fromPanel){
   document.getElementById('tnav-'+fromPanel).classList.add('done');
   document.getElementById('tnav-'+next).disabled = false;
   if(next === 5){
-    // Save answers before Formstack redirect
-    try { sessionStorage.setItem('innovationAnswers', JSON.stringify(answers)); } catch(e){}
+    // Save answers before Formstack redirect — localStorage persists across page reloads
+    try { localStorage.setItem('innovationAnswers', JSON.stringify(answers)); } catch(e){}
     showFormGate();
   } else {
     goTab(next);
@@ -800,10 +800,11 @@ document.getElementById('progStep').innerHTML = 'Step 1 of 6 &mdash; People &amp
 (function(){
   var params = new URLSearchParams(window.location.search);
   if(params.get('submitted') === '1'){
-    var saved = sessionStorage.getItem('innovationAnswers');
+    var saved = localStorage.getItem('innovationAnswers');
     if(saved){
       try {
         answers = JSON.parse(saved);
+        localStorage.removeItem('innovationAnswers'); // clean up after restoring
         // Unlock all tabs
         for(var i=0;i<=5;i++){
           var t=document.getElementById('tnav-'+i);
