@@ -193,7 +193,7 @@ body{font-family:'Cera Pro',system-ui,sans-serif;background:#fff;color:#0a0f1e;l
 
 @media print{
 body{background:#fff;}
-.sub-header,.prog-strip,.tab-nav,.continue-bar,.download-bar{display:none!important;}
+.sub-header,.prog-strip,.tab-nav,.continue-bar,.download-bar,.print-hide{display:none!important;}
 .panel{display:block!important;}
 .q-card,.q-options,.pillar-intro,.agentic-intro-card{display:none!important;}
 .page{max-width:100%;padding:20px;}
@@ -226,7 +226,7 @@ body{background:#fff;}
     <div class="sub-chips">
       <div class="s-chip"><strong>25</strong> Questions</div>
       <div class="s-chip"><strong>4</strong> Pillars</div>
-      <div class="s-chip">~5 min</div>
+      <div class="s-chip">~8 min</div>
     </div>
   </div>
 
@@ -637,6 +637,7 @@ function goTab(idx){
   document.documentElement.scrollTop = 0;
 }
 
+
 function advance(fromPanel){
   var next = fromPanel + 1;
   document.getElementById('tnav-'+fromPanel).classList.add('done');
@@ -742,7 +743,12 @@ function renderResults(){
   h+='<div><div class="ag-tier" style="color:'+at.color+'">'+at.label+'</div><div style="font-size:10px;color:rgba(255,255,255,0.35);margin-top:2px">Agentic AI tier</div></div>';
   h+='</div></div>';
 
-  h+='<div class="recs-title" style="margin-top:20px">Prioritized Recommendations</div>';
+  h+='<div style="display:flex;align-items:center;justify-content:space-between;margin-top:24px;margin-bottom:12px;padding:18px 22px;background:#002D72;border-radius:12px;">';
+  h+='<div><div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.55);margin-bottom:3px;">Your Report is Ready</div>';
+  h+='<div style="font-size:15px;font-weight:800;color:#fff;">Download Results</div></div>';
+  h+='<button class="btn-download" style="background:#fff;color:#002D72;border-color:#fff;" onclick="window.print()"><svg viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 2v8M4 7l3.5 3.5L11 7M2 12h11"/></svg>Save as PDF</button>';
+  h+='</div>';
+  h+='<div class="recs-title">Prioritized Recommendations</div>';
   var lmap={priority:'Priority',opportunity:'Opportunity',strength:'Strength'};
   buildRecs(scores,agPct).forEach(function(r){
     h+='<div class="rec-card"><span class="rec-tag tag-'+r.t+'">'+lmap[r.t]+'</span><div class="rec-body">'+r.b+'</div></div>';
@@ -750,15 +756,14 @@ function renderResults(){
 
   h+='<div class="reg-note"><strong>On Regulatory Navigation:</strong> Agentic progress and regulatory compliance are not opposites — they are parallel disciplines. The OCC, FDIC, and Federal Reserve are actively developing guidance on model risk management, fair lending in automated decisions, and AI governance. Community banks that begin building internal documentation, policy frameworks, and board awareness now will be positioned to move quickly and credibly when that guidance firms up.</div>';
 
-  h+='<div class="download-bar"><button class="btn-download" onclick="downloadResults()"><svg viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 2v8M4 7l3.5 3.5L11 7M2 12h11"/></svg>Download Results</button></div>';
-
   document.getElementById('resultsWrap').innerHTML = h;
 }
 
-function downloadResults(){ window.print(); }
+
+
+
 
 document.getElementById('progStep').innerHTML = 'Step 1 of 6 &mdash; People &amp; Leadership';
 </script>
 </body>
 </html>
-
