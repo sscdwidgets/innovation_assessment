@@ -578,7 +578,7 @@ body{background:#fff;}
   </div>
 
 </div>
-<div style="text-align:center;padding:12px 0 4px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#c8cdd8;letter-spacing:0.5px;">v7.2</div>
+<div style="text-align:center;padding:12px 0 4px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#c8cdd8;letter-spacing:0.5px;">v7.3</div>
 
 <script>
 var answers = {};
@@ -652,10 +652,43 @@ function advance(fromPanel){
 }
 
 function showFormGate(){
-  // Save answers then navigate this frame directly to Formstack — no nested iframe
-  try { localStorage.setItem('innovationAnswers', JSON.stringify(answers)); } catch(e){}
-  window.location.href = 'https://csbank.formstack.com/forms/innovation_results_request';
+  // Show panel 5 with Formstack embedded — listen for postMessage on submit
+  document.querySelectorAll('.panel').forEach(function(p){ p.classList.remove('active'); });
+  document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
+  document.getElementById('panel-5').classList.add('active');
+  document.getElementById('tnav-5').classList.add('active');
+  document.getElementById('progStep').innerHTML = 'Step 6 of 6 &mdash; Results';
+  try { window.parent.postMessage({type:'scrollToIframe'}, '*'); } catch(e){}
+  document.documentElement.scrollTop = 0;
+
+  document.getElementById('resultsWrap').innerHTML =
+    '<div style="text-align:center;padding:32px 20px 16px;">' +
+      '<div style="font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#002D72;margin-bottom:8px;">One Last Step</div>' +
+      '<div style="font-size:20px;font-weight:800;color:#0a0f1e;margin-bottom:8px;">Your results are ready</div>' +
+      '<div style="font-size:13px;color:#5a6070;max-width:420px;margin:0 auto 24px;line-height:1.6;">Tell us a bit about yourself and we’ll display your personalized readiness score and action plan below.</div>' +
+    '</div>' +
+    '<iframe id="fsGateFrame" src="https://csbank.formstack.com/forms/innovation_results_request" ' +
+      'style="width:100%;min-height:520px;border:none;border-radius:12px;display:block;" ' +
+      'allowtransparency="true">' +
+    '</iframe>';
 }
+
+// Listen for Formstack FF_OnAfterSave postMessage
+window.addEventListener('message', function(event) {
+  if(event.data === 'formstack:submitted') {
+    renderResults();
+    goTab(5);
+    // Replace iframe with results by clearing the gate content
+    var wrap = document.getElementById('resultsWrap');
+    if(wrap){
+      // Remove the form gate header and iframe, results already rendered by renderResults
+      var iframe = document.getElementById('fsGateFrame');
+      var gateHeader = iframe && iframe.previousElementSibling;
+      if(gateHeader) gateHeader.remove();
+      if(iframe) iframe.remove();
+    }
+  }
+}, false);
 
 function tierInfo(s){
   if(s>=80) return{tier:'Innovation Leader',desc:'Mature foundation. Focus on scaling agentic deployments and governance.',color:'#0a5e2e',bg:'linear-gradient(135deg,#edf9f2,#f5fcf8)',border:'#a8dfc0',bar:'#0d6938'};
@@ -777,33 +810,7 @@ function downloadResults(){ window.print(); }
 document.getElementById('progStep').innerHTML = 'Step 1 of 6 &mdash; People &amp; Leadership';
 
 
-// Restore answers when Formstack redirects back to this page with ?submitted=1
-(function(){
-  var params = new URLSearchParams(window.location.search);
-  if(params.get('submitted') === '1'){
-    var saved = localStorage.getItem('innovationAnswers');
-    if(saved){
-      try {
-        answers = JSON.parse(saved);
-        localStorage.removeItem('innovationAnswers');
-        for(var i=0;i<=5;i++){
-          var t=document.getElementById('tnav-'+i);
-          if(t){ t.disabled=false; }
-        }
-        for(var i=0;i<=4;i++){
-          var t=document.getElementById('tnav-'+i);
-          if(t){ t.classList.add('done'); }
-        }
-        document.getElementById('progFill').style.width='100%';
-        document.getElementById('progCount').textContent='25 / 25 answered';
-        renderResults();
-        goTab(5);
-      } catch(e){ console.warn('Could not restore answers', e); }
-    }
-    // Clean the URL so refreshing doesn't re-trigger
-    history.replaceState(null,'',window.location.pathname);
-  }
-})();
+
 </script>
 </body>
 </html>
