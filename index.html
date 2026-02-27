@@ -600,7 +600,7 @@ body{background:#fff;}
   </div>
 
 </div>
-<div style="text-align:center;padding:12px 0 4px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#c8cdd8;letter-spacing:0.5px;">v7.13</div>
+<div style="text-align:center;padding:12px 0 4px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#c8cdd8;letter-spacing:0.5px;">v7.14</div>
 
 <script>
 var answers = {};
@@ -834,6 +834,18 @@ function renderResults(){
 
 
 
+function collapseIndustryForm(){
+  var wrap = document.getElementById('industry-form-wrap');
+  var btn  = document.getElementById('btn-industry');
+  if(!wrap) return;
+  wrap.style.maxHeight = '0';
+  btn.innerHTML = '<svg viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4l5.5 5.5L13 4"/></svg>Report Request Sent';
+  btn.style.background = 'rgba(255,255,255,0.15)';
+  btn.disabled = true;
+  btn.style.opacity = '0.7';
+  btn.style.cursor = 'default';
+}
+
 function toggleIndustryForm(){
   var wrap = document.getElementById('industry-form-wrap');
   var btn  = document.getElementById('btn-industry');
@@ -845,19 +857,31 @@ function toggleIndustryForm(){
     var iframe = document.getElementById('industry-iframe');
     if(iframe && !iframe.dataset.watched){
       iframe.dataset.watched = '1';
+      // Method 1: load event (full page reload confirmation)
       var loadCount = 0;
       iframe.addEventListener('load', function(){
         loadCount++;
-        if(loadCount >= 2){
-          // Submitted — collapse and update button
-          wrap.style.maxHeight = '0';
-          btn.innerHTML = '<svg viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 7.5h11M7.5 3l4.5 4.5L7.5 12"/></svg>Report Request Sent';
-          btn.style.background = 'rgba(255,255,255,0.15)';
-          btn.disabled = true;
-          btn.style.opacity = '0.7';
-          btn.style.cursor = 'default';
-        }
+        if(loadCount >= 2) collapseIndustryForm();
       });
+      // Method 2: MutationObserver for AJAX in-page confirmation
+      iframe.addEventListener('load', function(){
+        try {
+          var doc = iframe.contentDocument || iframe.contentWindow.document;
+          var observer = new MutationObserver(function(){
+            try {
+              var body = doc.body && doc.body.innerText || '';
+              if(body.indexOf('Thank') !== -1 || body.indexOf('thank') !== -1 ||
+                 body.indexOf('success') !== -1 || body.indexOf('Success') !== -1 ||
+                 body.indexOf('submitted') !== -1 || body.indexOf('Submitted') !== -1 ||
+                 body.indexOf('received') !== -1 || body.indexOf('Received') !== -1){
+                observer.disconnect();
+                collapseIndustryForm();
+              }
+            } catch(e){}
+          });
+          observer.observe(doc.body, {childList:true, subtree:true, characterData:true});
+        } catch(e){} // cross-origin will throw — that's ok, load method handles it
+      }, {once:true});
     }
   } else {
     wrap.style.maxHeight = '0';
