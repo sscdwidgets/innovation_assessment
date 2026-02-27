@@ -578,7 +578,7 @@ body{background:#fff;}
   </div>
 
 </div>
-<div style="text-align:center;padding:12px 0 4px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#c8cdd8;letter-spacing:0.5px;">v7.4</div>
+<div style="text-align:center;padding:12px 0 4px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#c8cdd8;letter-spacing:0.5px;">v7.5.1</div>
 
 <script>
 var answers = {};
@@ -790,7 +790,7 @@ function renderResults(){
   h+='<div><div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.55);margin-bottom:3px;">Your Report is Ready</div>';
   h+='<div style="font-size:15px;font-weight:800;color:#fff;">Download Results</div></div>';
   h+='<button class="btn-download" style="background:#fff;color:#002D72;border-color:#fff;" onclick="window.print()"><svg viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 2v8M4 7l3.5 3.5L11 7M2 12h11"/></svg>Save as PDF</button>';
-  h+="'</div>';"
+  h+='</div>';
   h+='<div class="recs-title">Prioritized Recommendations</div>';
   var lmap={priority:'Priority',opportunity:'Opportunity',strength:'Strength'};
   buildRecs(scores,agPct).forEach(function(r){
