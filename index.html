@@ -194,15 +194,36 @@ body{font-family:'Cera Pro',system-ui,sans-serif;background:#fff;color:#0a0f1e;l
 .btn-download svg{width:15px;height:15px;flex-shrink:0;}
 
 @media print{
+@page{size:letter portrait;margin:0.35in 0.4in;}
 body{background:#fff;}
-.sub-header,.prog-strip,.tab-nav,.continue-bar,.download-bar{display:none!important;}
+.sub-header,.prog-strip,.tab-nav,.continue-bar,.download-bar,.reg-note{display:none!important;}
 .panel{display:block!important;}
 .q-card,.q-options,.pillar-intro,.agentic-intro-card{display:none!important;}
-.page{max-width:100%;padding:20px;}
+.page{max-width:100%;padding:8px;}
+.score-hero{padding:14px 16px;margin-bottom:10px;}
+.score-big{font-size:40px!important;}
+.score-tier{font-size:16px!important;}
+.score-desc{font-size:10px!important;}
+.stat-row{margin-bottom:10px;gap:7px;}
+.stat-card{padding:10px 12px;}
+.stat-lbl{font-size:8px!important;}
+.stat-val.sm{font-size:13px!important;}
+.stat-detail{font-size:10px!important;}
+.pillar-grid{gap:7px;margin-bottom:10px;}
+.p-tile{padding:10px 9px;}
+.p-tile-pct{font-size:15px!important;}
+.agentic-result{padding:14px 16px;margin-bottom:10px;}
+.agentic-result h3{font-size:13px!important;}
+.agentic-result p{font-size:10px!important;}
+.ag-score-num{font-size:28px!important;}
+.recs-title{margin-bottom:6px;}
+.rec-card{padding:10px 12px;margin-bottom:5px;}
+.rec-body{font-size:11px!important;line-height:1.45!important;}
 .score-hero,.stat-row,.pillar-grid,.agentic-result,.rec-card{break-inside:avoid;}
 .agentic-result{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
 .score-hero{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
 .tag-priority,.tag-opportunity,.tag-strength{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+.p-bar-bg,.ag-bar-bg,.ag-bar-fill,.score-bar-fill,.p-bar-fill{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
 }
 
 @media(max-width:600px){
@@ -578,7 +599,7 @@ body{background:#fff;}
   </div>
 
 </div>
-<div style="text-align:center;padding:12px 0 4px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#c8cdd8;letter-spacing:0.5px;">v7.5.1</div>
+<div style="text-align:center;padding:12px 0 4px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#c8cdd8;letter-spacing:0.5px;">v7.6</div>
 
 <script>
 var answers = {};
@@ -783,7 +804,7 @@ function renderResults(){
   h+='<div><div class="ag-score-num">'+agPct+'</div><div class="ag-score-sub">out of 100</div></div>';
   h+='<div class="ag-bar-wrap"><div class="ag-bar-bg"><div class="ag-bar-fill" style="width:'+agPct+'%"></div></div>';
   h+='<div style="display:flex;justify-content:space-between;margin-top:5px"><span style="font-size:9px;color:rgba(255,255,255,0.35)">Not Started</span><span style="font-size:9px;color:rgba(255,255,255,0.35)">AI-Ready</span></div></div>';
-  h+='<div><div class="ag-tier" style="color:'+at.color+'">'+at.label+'</div><div style="font-size:10px;color:rgba(255,255,255,0.35);margin-top:2px">Agentic AI tier</div></div>';
+  h+='<div><div class="ag-tier" style="color:#FFBF3F">'+at.label+'</div><div style="font-size:10px;color:rgba(255,255,255,0.35);margin-top:2px">Agentic AI tier</div></div>';
   h+='</div></div>';
 
   h+='<div style="display:flex;align-items:center;justify-content:space-between;margin-top:24px;margin-bottom:12px;padding:18px 22px;background:#002D72;border-radius:12px;">';
@@ -799,12 +820,11 @@ function renderResults(){
 
   h+='<div class="reg-note"><strong>On Regulatory Navigation:</strong> Agentic progress and regulatory compliance are not opposites — they are parallel disciplines. The OCC, FDIC, and Federal Reserve are actively developing guidance on model risk management, fair lending in automated decisions, and AI governance. Community banks that begin building internal documentation, policy frameworks, and board awareness now will be positioned to move quickly and credibly when that guidance firms up.</div>';
 
-  h+='<div class="download-bar"><button class="btn-download" onclick="downloadResults()"><svg viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 2v8M4 7l3.5 3.5L11 7M2 12h11"/></svg>Download Results</button></div>';
+
 
   document.getElementById('resultsWrap').innerHTML = h;
 }
 
-function downloadResults(){ window.print(); }
 
 document.getElementById('progStep').innerHTML = 'Step 1 of 6 &mdash; People &amp; Leadership';
 
