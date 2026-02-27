@@ -600,7 +600,7 @@ body{background:#fff;}
   </div>
 
 </div>
-<div style="text-align:center;padding:12px 0 4px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#c8cdd8;letter-spacing:0.5px;">v7.8</div>
+<div style="text-align:center;padding:12px 0 4px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#c8cdd8;letter-spacing:0.5px;">v7.9</div>
 
 <script>
 var answers = {};
@@ -673,6 +673,42 @@ function advance(fromPanel){
   }
 }
 
+function buildFormUrl(){
+  // Question answer field IDs (Q1-Q25)
+  var qMap = {
+    'q1':'192975391','q2':'192976712','q3':'192976715','q4':'192976840','q5':'192976881',
+    'q6':'192976884','q7':'192976886','q8':'192976887','q9':'192976996','q10':'192977014',
+    'q11':'192977016','q12':'192977028','q13':'192977030','q14':'192977037','q15':'192977039',
+    'q16':'192977065','q17':'192977067','q18':'192977069','q19':'192977075','q20':'192977076',
+    'q21':'192977147','q22':'192977293','q23':'192977296','q24':'192977300','q25':'192977326'
+  };
+  // Compute pillar scores
+  var pScores = PILLARS.map(function(p){
+    var raw = p.qs.reduce(function(s,q){return s+val(q);},0);
+    return Math.round(raw/p.max*100);
+  });
+  var agRaw = AGENTIC.qs.reduce(function(s,q){return s+val(q);},0);
+  var agPct = Math.round(agRaw/AGENTIC.max*100);
+  var overall = Math.round(pScores.reduce(function(s,p){return s+p;},0)/pScores.length);
+  var params = [];
+  // Q1-Q25 answers
+  Object.keys(qMap).forEach(function(q){
+    if(answers[q] !== undefined){
+      params.push('field'+qMap[q]+'='+encodeURIComponent(answers[q]));
+    }
+  });
+  // Pillar scores
+  params.push('field192977358='+pScores[0]); // People
+  params.push('field192977362='+pScores[1]); // Philosophy
+  params.push('field192977473='+pScores[2]); // Process
+  params.push('field192977503='+pScores[3]); // Pace
+  params.push('field192977507='+overall);     // Overall
+  params.push('field192977509='+agPct);       // Agentic AI score
+  params.push('field192977542='+encodeURIComponent(agTierInfo(agPct).label));   // Agentic AI tier
+  params.push('field192977594='+encodeURIComponent(tierInfo(overall).tier));    // Overall tier
+  return 'https://csbank.formstack.com/forms/innovation_results_request?'+params.join('&');
+}
+
 function showFormGate(){
   document.querySelectorAll('.panel').forEach(function(p){ p.classList.remove('active'); });
   document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
@@ -688,7 +724,7 @@ function showFormGate(){
       '<div style="font-size:20px;font-weight:800;color:#0a0f1e;margin-bottom:8px;">Your results are ready</div>' +
       '<div style="font-size:13px;color:#5a6070;max-width:420px;margin:0 auto 24px;line-height:1.6;">Tell us a bit about yourself and we’ll display your personalized readiness score and action plan below.</div>' +
     '</div>' +
-    '<iframe id="fsGateFrame" src="https://csbank.formstack.com/forms/innovation_results_request" ' +
+    '<iframe id="fsGateFrame" src="' + buildFormUrl() + '" ' +
       'style="width:100%;min-height:520px;border:none;border-radius:12px;display:block;" ' +
       'allowtransparency="true">' +
     '</iframe>';
