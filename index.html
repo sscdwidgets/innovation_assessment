@@ -197,7 +197,7 @@ body{font-family:'Cera Pro',system-ui,sans-serif;background:#fff;color:#0a0f1e;l
 @page{size:letter portrait;margin:0;}
 .page{padding:0.35in 0.4in!important;}
 body{background:#fff;}
-.sub-header,.prog-strip,.tab-nav,.continue-bar,.download-bar,.reg-note{display:none!important;}
+.sub-header,.prog-strip,.tab-nav,.continue-bar,.download-bar,.reg-note,.print-hide{display:none!important;}
 .panel{display:block!important;}
 .q-card,.q-options,.pillar-intro,.agentic-intro-card{display:none!important;}
 .page{max-width:100%;padding:8px;}
@@ -600,7 +600,7 @@ body{background:#fff;}
   </div>
 
 </div>
-<div style="text-align:center;padding:12px 0 4px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#c8cdd8;letter-spacing:0.5px;">v7.7</div>
+<div style="text-align:center;padding:12px 0 4px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#c8cdd8;letter-spacing:0.5px;">v7.8</div>
 
 <script>
 var answers = {};
@@ -808,7 +808,7 @@ function renderResults(){
   h+='<div><div class="ag-tier" style="color:#FFBF3F">'+at.label+'</div><div style="font-size:10px;color:rgba(255,255,255,0.35);margin-top:2px">Agentic AI tier</div></div>';
   h+='</div></div>';
 
-  h+='<div style="display:flex;align-items:center;justify-content:space-between;margin-top:24px;margin-bottom:12px;padding:18px 22px;background:#002D72;border-radius:12px;">';
+  h+='<div class="print-hide" style="display:flex;align-items:center;justify-content:space-between;margin-top:24px;margin-bottom:12px;padding:18px 22px;background:#002D72;border-radius:12px;">';
   h+='<div><div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.55);margin-bottom:3px;">Your Report is Ready</div>';
   h+='<div style="font-size:15px;font-weight:800;color:#fff;">Download Results</div></div>';
   h+='<button class="btn-download" style="background:#fff;color:#002D72;border-color:#fff;" onclick="window.print()"><svg viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 2v8M4 7l3.5 3.5L11 7M2 12h11"/></svg>Save as PDF</button>';
