@@ -600,7 +600,7 @@ body{background:#fff;}
   </div>
 
 </div>
-<div style="text-align:center;padding:12px 0 4px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#c8cdd8;letter-spacing:0.5px;">v7.14</div>
+<div style="text-align:center;padding:12px 0 4px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#c8cdd8;letter-spacing:0.5px;">v7.16</div>
 
 <script>
 var answers = {};
@@ -857,30 +857,9 @@ function toggleIndustryForm(){
     var iframe = document.getElementById('industry-iframe');
     if(iframe && !iframe.dataset.watched){
       iframe.dataset.watched = '1';
-      // Method 1: load event (full page reload confirmation)
-      var loadCount = 0;
+      // Collapse 30 seconds after the form first loads — enough time to fill and submit
       iframe.addEventListener('load', function(){
-        loadCount++;
-        if(loadCount >= 2) collapseIndustryForm();
-      });
-      // Method 2: MutationObserver for AJAX in-page confirmation
-      iframe.addEventListener('load', function(){
-        try {
-          var doc = iframe.contentDocument || iframe.contentWindow.document;
-          var observer = new MutationObserver(function(){
-            try {
-              var body = doc.body && doc.body.innerText || '';
-              if(body.indexOf('Thank') !== -1 || body.indexOf('thank') !== -1 ||
-                 body.indexOf('success') !== -1 || body.indexOf('Success') !== -1 ||
-                 body.indexOf('submitted') !== -1 || body.indexOf('Submitted') !== -1 ||
-                 body.indexOf('received') !== -1 || body.indexOf('Received') !== -1){
-                observer.disconnect();
-                collapseIndustryForm();
-              }
-            } catch(e){}
-          });
-          observer.observe(doc.body, {childList:true, subtree:true, characterData:true});
-        } catch(e){} // cross-origin will throw — that's ok, load method handles it
+        setTimeout(collapseIndustryForm, 1000);
       }, {once:true});
     }
   } else {
