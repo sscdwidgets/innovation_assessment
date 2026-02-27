@@ -600,7 +600,7 @@ body{background:#fff;}
   </div>
 
 </div>
-<div style="text-align:center;padding:12px 0 4px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#c8cdd8;letter-spacing:0.5px;">v7.9</div>
+<div style="text-align:center;padding:12px 0 4px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#c8cdd8;letter-spacing:0.5px;">v7.12</div>
 
 <script>
 var answers = {};
@@ -666,11 +666,8 @@ function advance(fromPanel){
   var next = fromPanel + 1;
   document.getElementById('tnav-'+fromPanel).classList.add('done');
   document.getElementById('tnav-'+next).disabled = false;
-  if(next === 5){
-    showFormGate();
-  } else {
-    goTab(next);
-  }
+  if(next === 5) renderResults();
+  goTab(next);
 }
 
 function buildFormUrl(){
@@ -707,44 +704,6 @@ function buildFormUrl(){
   params.push('field192977542='+encodeURIComponent(agTierInfo(agPct).label));   // Agentic AI tier
   params.push('field192977594='+encodeURIComponent(tierInfo(overall).tier));    // Overall tier
   return 'https://csbank.formstack.com/forms/innovation_results_request?'+params.join('&');
-}
-
-function showFormGate(){
-  document.querySelectorAll('.panel').forEach(function(p){ p.classList.remove('active'); });
-  document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
-  document.getElementById('panel-5').classList.add('active');
-  document.getElementById('tnav-5').classList.add('active');
-  document.getElementById('progStep').innerHTML = 'Step 6 of 6 &mdash; Results';
-  try { window.parent.postMessage({type:'scrollToIframe'}, '*'); } catch(e){}
-  document.documentElement.scrollTop = 0;
-
-  document.getElementById('resultsWrap').innerHTML =
-    '<div id="fsGateHeader" style="text-align:center;padding:32px 20px 16px;">' +
-      '<div style="font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#002D72;margin-bottom:8px;">One Last Step</div>' +
-      '<div style="font-size:20px;font-weight:800;color:#0a0f1e;margin-bottom:8px;">Your results are ready</div>' +
-      '<div style="font-size:13px;color:#5a6070;max-width:420px;margin:0 auto 24px;line-height:1.6;">Tell us a bit about yourself and we’ll display your personalized readiness score and action plan below.</div>' +
-    '</div>' +
-    '<iframe id="fsGateFrame" src="' + buildFormUrl() + '" ' +
-      'style="width:100%;min-height:520px;border:none;border-radius:12px;display:block;" ' +
-      'allowtransparency="true">' +
-    '</iframe>';
-
-  // Detect submission by watching for the iframe's second load event.
-  // First load = form rendered. Second load = confirmation page after submit.
-  var iframe = document.getElementById('fsGateFrame');
-  var loadCount = 0;
-  iframe.addEventListener('load', function(){
-    loadCount++;
-    if(loadCount >= 2){
-      // Form was submitted — remove gate UI and render results
-      var header = document.getElementById('fsGateHeader');
-      if(header) header.remove();
-      iframe.remove();
-      renderResults();
-      document.documentElement.scrollTop = 0;
-      try { window.parent.postMessage({type:'scrollToIframe'}, '*'); } catch(e){}
-    }
-  });
 }
 
 function tierInfo(s){
@@ -844,10 +803,21 @@ function renderResults(){
   h+='<div><div class="ag-tier" style="color:#FFBF3F">'+at.label+'</div><div style="font-size:10px;color:rgba(255,255,255,0.35);margin-top:2px">Agentic AI tier</div></div>';
   h+='</div></div>';
 
-  h+='<div class="print-hide" style="display:flex;align-items:center;justify-content:space-between;margin-top:24px;margin-bottom:12px;padding:18px 22px;background:#002D72;border-radius:12px;">';
-  h+='<div><div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.55);margin-bottom:3px;">Your Report is Ready</div>';
-  h+='<div style="font-size:15px;font-weight:800;color:#fff;">Download Results</div></div>';
+  var fsUrl = buildFormUrl();
+  h+='<div class="print-hide" style="margin-top:24px;margin-bottom:12px;background:#002D72;border-radius:12px;overflow:hidden;">';
+  h+='<div style="display:flex;align-items:center;justify-content:space-between;padding:18px 22px;gap:12px;flex-wrap:wrap;">';
+  h+='<div><div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.55);margin-bottom:3px;">Your Results</div>';
+  h+='<div style="font-size:15px;font-weight:800;color:#fff;">Save or stay in the loop</div></div>';
+  h+='<div style="display:flex;gap:10px;flex-wrap:wrap;">';
+  h+='<button id="btn-industry" class="btn-download" style="background:transparent;color:#fff;border-color:rgba(255,255,255,0.5);" onclick="toggleIndustryForm()"><svg viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 8H8m0 0L5 5m3 3L5 11M9 2h4v11H9"/></svg>Get Industry Report</button>';
   h+='<button class="btn-download" style="background:#fff;color:#002D72;border-color:#fff;" onclick="window.print()"><svg viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 2v8M4 7l3.5 3.5L11 7M2 12h11"/></svg>Save as PDF</button>';
+  h+='</div>';
+  h+='</div>';
+  h+='<div id="industry-form-wrap" style="max-height:0;overflow:hidden;transition:max-height 0.4s ease;">';
+  h+='<div style="padding:0 22px 22px;">';
+  h+='<iframe src="'+fsUrl+'" style="width:100%;min-height:480px;border:none;border-radius:10px;display:block;background:#fff;" allowtransparency="true"></iframe>';
+  h+='</div>';
+  h+='</div>';
   h+='</div>';
   h+='<div class="recs-title">Prioritized Recommendations</div>';
   var lmap={priority:'Priority',opportunity:'Opportunity',strength:'Strength'};
@@ -863,6 +833,19 @@ function renderResults(){
 }
 
 
+
+function toggleIndustryForm(){
+  var wrap = document.getElementById('industry-form-wrap');
+  var btn  = document.getElementById('btn-industry');
+  if(!wrap) return;
+  if(wrap.style.maxHeight === '0px' || wrap.style.maxHeight === '0'){
+    wrap.style.maxHeight = '600px';
+    btn.style.background = 'rgba(255,255,255,0.15)';
+  } else {
+    wrap.style.maxHeight = '0';
+    btn.style.background = 'transparent';
+  }
+}
 document.getElementById('progStep').innerHTML = 'Step 1 of 6 &mdash; People &amp; Leadership';
 
 
